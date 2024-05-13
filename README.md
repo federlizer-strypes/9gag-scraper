@@ -48,6 +48,14 @@ the "Scrape!" button (or enter) will start the scraping process - the webdriver 
 down the required amount (twice by default) and fetch all images that have been found. The images that have been found
 will be displaed as thumbnails and you will have the opportunity to save the images on your computer.
 
+### Known issues
+
+##### Cloudflare - are you a robot?!
+
+9GAG is protected by CloudFlare or some other proxy. Sometimes, I've had issues with it trying to verify that I'm human.
+The webdriver is obviously not human, so you cannot simply click the button to go around the verification. The way that
+I went around it is to open the same page with my own Chrome browser and going through the verification step.
+
 ### Next steps
 
 - Get the webdriver to minimize
