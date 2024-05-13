@@ -21,6 +21,7 @@ class App(Frame):
 
         self.init_widgets()
         self.config_keybinds()
+        self.config_children()
 
     def init_widgets(self):
         self.search_term = StringVar()
@@ -40,6 +41,10 @@ class App(Frame):
         # Using a lambda here, to avoid having the scrape method require an
         # *args parameter
         self.master.bind("<Return>", lambda ev: self.scrape())
+
+    def config_children(self):
+        for child in self.winfo_children():
+            child.grid_configure(padx=5, pady=5)
 
     def scrape(self):
         search_term = self.search_term.get()

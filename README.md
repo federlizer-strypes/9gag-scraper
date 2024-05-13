@@ -50,7 +50,6 @@ will be displaed as thumbnails and you will have the opportunity to save the ima
 
 ### Next steps
 
-- Make the gui nice looking with some padding between elements
 - Get the webdriver to minimize
 - Have "Save" buttons below each of the images to be able to save them to a directory
 - Have an entry where the user can define the download folder (otherwise, use the default)
