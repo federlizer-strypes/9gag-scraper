@@ -20,6 +20,7 @@ class App(Frame):
         self.grid(column=0, row=0, sticky=(N, W, E, S))
 
         self.init_widgets()
+        self.config_keybinds()
 
     def init_widgets(self):
         self.search_term = StringVar()
@@ -34,6 +35,11 @@ class App(Frame):
 
         self.image_container = ImageContainer(master=self)
         self.image_container.grid(column=0, row=2, columnspan=2, sticky=(W, E))
+
+    def config_keybinds(self):
+        # Using a lambda here, to avoid having the scrape method require an
+        # *args parameter
+        self.master.bind("<Return>", lambda ev: self.scrape())
 
     def scrape(self):
         search_term = self.search_term.get()
