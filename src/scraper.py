@@ -1,6 +1,7 @@
 import io
 import time
 import logging
+import urlparse
 
 import requests
 
@@ -29,9 +30,10 @@ class ScrapedImage(object):
             that should be generated. Default: (128, 128).
     """
 
-    def __init__(self, data, thumbnail_size=(128, 128)):
+    def __init__(self, data, name, thumbnail_size=(128, 128)):
         # Generate full-sized image
         self._image = Image.open(io.BytesIO(data))
+        self._name = name
 
         # Generate its thumbnail, but DO NOT overwrite the original image
         self._thumbnail = self._image.copy()
@@ -46,6 +48,9 @@ class ScrapedImage(object):
     def thumbnail(self):
         """The thumbnail of the image"""
         return self._thumbnail
+
+    def save(self, *args, **kwargs):
+        return self._image.save(*args, **kwargs)
 
 
 class NineGagScraper(object):
@@ -73,7 +78,11 @@ class NineGagScraper(object):
         # Generate PIL image objects
         images = []
         for url in image_urls:
-            log.info("Downloading image '%s'", url)
+            # Get the name of the file as it is stored in 9GAG
+            parsed_url = urlparse.urlparse(url)
+            img_name = parsed_url.path.rsplit("/", 1)[-1]
+
+            log.info("Downloading image '%s'", img_name)
             res = requests.get(url)
 
             if not res.ok:
@@ -85,7 +94,7 @@ class NineGagScraper(object):
                     res.text)
                 continue
 
-            image = ScrapedImage(res.content)
+            image = ScrapedImage(res.content, img_name)
             images.append(image)
             log.info("Successfully downloaded '%s'", url)
 

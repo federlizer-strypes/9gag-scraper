@@ -59,7 +59,6 @@ I went around it is to open the same page with my own Chrome browser and going t
 ### Next steps
 
 - Get the webdriver to minimize
-- Have "Save" buttons below each of the images to be able to save them to a directory
 - Have an entry where the user can define the download folder (otherwise, use the default)
 - Have an entry field that allows the user to select the number of times the webdriver will scroll down
 - Try and find a way to use the `with` keyword with the scraper and gui classes, so the browser can be closed
