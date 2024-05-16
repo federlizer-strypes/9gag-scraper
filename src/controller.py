@@ -35,10 +35,6 @@ class Controller(object):
     def save_image(self, *args, **kwargs):
         """Save an image to disk."""
 
-        log.warning("""This is an extremely long line and I want to see how it
-                    will look when it spans multiple lines and has the space
-                    in front of the thingy.
-But also when it doesn't.""")
         if not args:
             log.warning("""Didn't receive the component that
                         contains the image we need to save""")
