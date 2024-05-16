@@ -1,128 +1,169 @@
 import os
 import logging
 
-from Tkinter import Frame, Label, Entry, Button, StringVar, N, W, E, S
-from PIL import ImageTk
+import Tkinter as tk
 
-import scraper
+from PIL import ImageTk as PILImageTk
 
-DOWNLOAD_DIRECTORY = "./images/"
+
+DOWNLOAD_DIRECTORY = "./images"
 
 log = logging.getLogger(__name__)
 
 
-class App(Frame):
-    def __init__(self, master=None):
-        log.info("Initializing TKinter application")
+class App(tk.Frame):
+    """The TK main application class."""
 
-        # Init scraper
-        self.scraper = scraper.NineGagScraper()
-        # self.scraper = None
+    TITLE = "9GAG Scraper"
+    SEARCH_TERM_LABEL_TEXT = "Search term:"
+    SCRAPE_BUTTON_TEXT = "Scrape!"
 
-        Frame.__init__(self, master)
-        self.master.title("9GAG Scraper")
-        self.grid(column=0, row=0, sticky=(N, W, E, S))
+    def __init__(self, scrape_cb, save_image_cb, master=None):
+        tk.Frame.__init__(self, master)
+        # Callback functions
+        self._scrape_cb = scrape_cb
+        self._save_image_cb = save_image_cb
+        # TK components
+        self._search_term = None
+        self._search_term_label = None
+        self._search_term_entry = None
+        self._scrape_button = None
+        self._image_container = None
 
-        self.init_widgets()
-        self.config_keybinds()
-        self.config_children()
+        self._setup_application()
+        self._init_widgets()
+        self._position_widgets()
 
-    def init_widgets(self):
-        self.search_term = StringVar()
-        self.search_term_entry = Entry(self, textvariable=self.search_term)
-        self.search_term_entry.grid(column=1, row=0)
+    def _setup_application(self):
+        """Setup the application's configuration."""
 
-        # Do we need to track these really?
-        Label(self, text="Search term") \
-            .grid(column=0, row=0)
-        Button(self, text="Scrape!", command=self.scrape) \
-            .grid(column=0, row=1, columnspan=2)
+        self.master.title(App.TITLE)
 
-        self.image_container = ImageContainer(master=self)
-        self.image_container.grid(column=0, row=2, columnspan=2, sticky=(W, E))
+    def _init_widgets(self):
+        """Initialize widgets."""
 
-    def config_keybinds(self):
-        # Using a lambda here, to avoid having the scrape method require an
-        # *args parameter
-        self.master.bind("<Return>", lambda ev: self.scrape())
+        self._search_term = tk.StringVar()
+        self._search_term_entry = tk.Entry(
+                self, textvariable=self._search_term)
+        self._search_term_label = tk.Label(
+                self, text=App.SEARCH_TERM_LABEL_TEXT)
+        self._scrape_button = tk.Button(
+                self, text=App.SCRAPE_BUTTON_TEXT, command=self._scrape)
+        self._image_container = ImageContainer(
+                self._save_image_cb, master=self)
 
-    def config_children(self):
-        for child in self.winfo_children():
-            child.grid_configure(padx=5, pady=5)
+    def _position_widgets(self):
+        """Position and pad application widgets."""
 
-    def scrape(self):
-        search_term = self.search_term.get()
-        tag = search_term if search_term else None
+        self.grid(column=0, row=0, sticky=(tk.N, tk.W, tk.E, tk.S))
+        # First row
+        self._search_term_label.grid(column=0, row=0, padx=5, pady=5)
+        self._search_term_entry.grid(column=1, row=0, padx=5, pady=5)
+        # Second row
+        self._scrape_button.grid(column=0, row=1, columnspan=2, padx=5, pady=5)
+        # Third row and onwards
+        self._image_container.grid(
+                column=0, row=2, columnspan=2, sticky=(tk.W, tk.E))
 
-        if tag:
-            scraped_images = self.scraper.scrape_images(tag=tag)
-        else:
-            scraped_images = self.scraper.scrape_images()
+    def _scrape(self):
+        """Call scrape callback function."""
 
-        self.image_container.update_images(scraped_images)
+        if self._scrape_cb:
+            self._scrape_cb()
 
-    def close(self):
-        if self.scraper:
-            self.scraper.close()
+    def config_bind(self, bind, cb):
+        """Configure a keybind to a callback function."""
+
+        self.master.bind(bind, lambda ev: cb(ev))
+
+    def get_search_term(self):
+        """Retrieve the search term written by the user."""
+
+        return self._search_term.get()
+
+    def display_images(self, images):
+        """Display the images on the GUI."""
+
+        self._image_container.update_images(images)
+
+    def start(self):
+        """Start up the TK application."""
+
+        self.mainloop()
 
 
-class ImageContainer(Frame):
-    def __init__(self, master=None, images=[]):
-        Frame.__init__(self, master, borderwidth=1, relief="ridge")
+class ImageContainer(tk.Frame):
+    """A container that displays the images that have been scraped."""
+
+    DEFAULT_RELIEF = "ridge"
+    DEFAULT_BORDREWIDTH = 1
+    PLACEHOLDER_TEXT = "It's so empty in here..."
+
+    def __init__(self, save_image_cb, master=None, images=None):
+        tk.Frame.__init__(
+                self, master, borderwidth=ImageContainer.DEFAULT_BORDREWIDTH,
+                relief=ImageContainer.DEFAULT_RELIEF)
+        self._save_image_cb = save_image_cb
         self._images = images
         self._render()
 
     def _render(self):
+        """Render the images (or the lack thereof)."""
+
         if not self._images:
-            label = Label(self, text="It's so empty in here...")
+            label = tk.Label(self, text=ImageContainer.PLACEHOLDER_TEXT)
             label.grid(column=0, row=0)
-
-        else:
-            for idx, img in enumerate(self._images):
-                # TODO: Make it span multple rows!
-                image_container = Image(self, img)
-                image_container.grid(column=idx, row=0)
-
-            for child in self.winfo_children():
-                child.grid_configure(padx=5, pady=5)
+            return
+        # Render each image in the container
+        for idx, img in enumerate(self._images):
+            # TODO: Make it span multple rows
+            image_container = Image(self, img, self._save_image_cb)
+            image_container.grid(column=idx, row=0)
+        for child in self.winfo_children():
+            child.grid_configure(padx=5, pady=5)
 
     def _clear_content(self):
-        """
-        Clears the contents of the ImageContainer
-        """
+        """Clear the contents of the ImageContainer."""
 
         for child in self.winfo_children():
             child.destroy()
 
-    def update_images(self, images=[]):
+    def update_images(self, images=None):
+        """Update the images displayed in the container."""
+
         self._images = images
         self._clear_content()
         self._render()
 
 
-class Image(Frame):
-    def __init__(self, master, image):
-        Frame.__init__(self, master)
-        self._image = image
+class Image(tk.Frame):
+    """
+    A component that displays an image and a button to save the image to disk.
+    """
 
-        # Create image itself
-        self._tk_img = ImageTk.PhotoImage(self._image.thumbnail)
-        self._tk_img_label = Label(self, image=self._tk_img)
+    ACTIVE_BUTTON_TEXT = "Save"
+    DISABLED_BUTTON_TEXT = "Saved"
+
+    def __init__(self, master, image, save_cb):
+        tk.Frame.__init__(self, master)
+        self._save_cb = save_cb
+        self.image = image
+        self._tk_img = PILImageTk.PhotoImage(self.image.thumbnail)
+        self._tk_img_label = tk.Label(self, image=self._tk_img)
         self._tk_img_label.image = self._tk_img
         self._tk_img_label.grid(column=0, row=0)
-
-        self._save_button = Button(self, text="Save", command=self.save_image)
+        self._save_button = tk.Button(
+                self, text=Image.ACTIVE_BUTTON_TEXT, command=self._save)
         self._save_button.grid(column=0, row=1)
 
-    def save_image(self):
-        # Ensure the SAVE_LOCATION directory actually exists
-        log.info("Saving image {}".format(self._image))
+    def _save(self):
+        """Call the save callback function."""
 
-        if not os.path.exists(DOWNLOAD_DIRECTORY):
-            os.makedirs(DOWNLOAD_DIRECTORY)
+        if self._save_cb:
+            self._save_cb(self)
 
-        save_location = "{}/{}".format(DOWNLOAD_DIRECTORY, self._image._name)
-        self._image.save(save_location)
-        log.info("Successfully saved image {} to {}".format(
-            self._image, save_location))
-        self._save_button.config(state="disabled", text="Saved")
+    def disable_save_button(self):
+        """Disable the save button."""
+
+        self._save_button.config(
+                state="disabled", text=Image.DISABLED_BUTTON_TEXT)
