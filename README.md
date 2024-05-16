@@ -46,7 +46,7 @@ python ./src/main.py
 This will open up the GUI application, where you'll be able to define the search term you want to scrape with. Hitting
 the "Scrape!" button (or enter) will start the scraping process - the webdriver will fetch the webpage needed, scroll
 down the required amount (twice by default) and fetch all images that have been found. The images that have been found
-will be displaed as thumbnails and you will have the opportunity to save the images on your computer.
+will be displayed as thumbnails and you will have the opportunity to save the images on your computer.
 
 ### Known issues
 

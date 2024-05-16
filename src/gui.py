@@ -1,4 +1,3 @@
-import os
 import logging
 
 import Tkinter as tk
@@ -96,12 +95,12 @@ class ImageContainer(tk.Frame):
     """A container that displays the images that have been scraped."""
 
     DEFAULT_RELIEF = "ridge"
-    DEFAULT_BORDREWIDTH = 1
+    DEFAULT_BORDERWIDTH = 1
     PLACEHOLDER_TEXT = "It's so empty in here..."
 
     def __init__(self, save_image_cb, master=None, images=None):
         tk.Frame.__init__(
-                self, master, borderwidth=ImageContainer.DEFAULT_BORDREWIDTH,
+                self, master, borderwidth=ImageContainer.DEFAULT_BORDERWIDTH,
                 relief=ImageContainer.DEFAULT_RELIEF)
         self._save_image_cb = save_image_cb
         self._images = images
