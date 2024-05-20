@@ -9,9 +9,9 @@ from ninegag_scraper import scraper
 
 
 IMAGE_TEST_FORMAT = "PNG"
-img_1_url = "{}test_img_1.jpg".format(scraper.NineGagScraper.IMAGE_URL_PREFIX)
-img_2_url = "{}test_img_2.jpg".format(scraper.NineGagScraper.IMAGE_URL_PREFIX)
-img_3_url = "{}test_img_3.jpg".format(scraper.NineGagScraper.IMAGE_URL_PREFIX)
+img_1_url = "{}test_img_1.png".format(scraper.NineGagScraper.IMAGE_URL_PREFIX)
+img_2_url = "{}test_img_2.png".format(scraper.NineGagScraper.IMAGE_URL_PREFIX)
+img_3_url = "{}test_img_3.png".format(scraper.NineGagScraper.IMAGE_URL_PREFIX)
 
 
 def gen_image():
