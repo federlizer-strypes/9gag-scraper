@@ -26,8 +26,8 @@ def gen_image():
     return (img, img_bytes)
 
 
-def gen_mocked_requests_get(urls):
-    """Generate the mocked requests.get function."""
+def gen_mocked_requests_get_and_img_urls(urls):
+    """Generate the mocked requests.get function and assign image urls."""
 
     images = {}
     for url in urls:
