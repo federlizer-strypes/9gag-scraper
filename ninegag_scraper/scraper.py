@@ -58,13 +58,8 @@ class NineGagScraper(object):
 
     IMAGE_URL_PREFIX = "https://img-9gag-fun.9cache.com/photo/"
 
-    WINDOW_WIDTH = 800
-    WINDOW_HEIGHT = 600
-
-    def __init__(self):
-        self._driver = webdriver.Chrome()
-        self._driver.set_window_size(
-                NineGagScraper.WINDOW_WIDTH, NineGagScraper.WINDOW_HEIGHT)
+    def __init__(self, driver):
+        self._driver = driver
         self._driver.get(NineGagScraper.BASE_ADDRESS)
         self._accept_onetrust_cookies()
 
@@ -79,6 +74,7 @@ class NineGagScraper(object):
         self._driver.get(search_url)
         self._scroll_to_bottom(count=NineGagScraper.DEFAULT_SCROLL_COUNT)
         for img_url in self._find_images():
+            print("Found img_url: {}".format(img_url))
             # Get the name of the file as it is stored in 9GAG
             parsed_url = urlparse.urlparse(img_url)
             img_name = parsed_url.path.rsplit("/", 1)[-1]

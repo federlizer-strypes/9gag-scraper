@@ -1,0 +1,35 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "ninegag_scraper"
+version = "0.0.1"
+authors = [
+  { name="Federlizer", email="federlizer@protonmail.com" },
+]
+description = "A better 9GAG scraper than the previous one!"
+readme = "README.md"
+requires-python = ">=2.7"
+classifiers = [
+    "Programming Language :: Python :: 2",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "backports.functools-lru-cache==1.6.6",
+    "beautifulsoup4==4.9.3",
+    "bs4==0.0.2",
+    "certifi==2021.10.8",
+    "chardet==4.0.0",
+    "idna==2.10",
+    "Pillow==6.2.2",
+    "requests==2.27.1",
+    "selenium==3.141.0",
+    "soupsieve==1.9.6",
+    "urllib3==1.26.18",
+]
+
+[project.urls]
+Homepage = "https://github.com/federlizer-strypes/ninegag_scraper"
+Issues = "https://github.com/federlizer-strypes/ninegag_scraper/issues"

@@ -1,12 +1,19 @@
 import logging
 import os
 
-import gui
-import scraper
+from selenium import webdriver
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+
+from . import gui, scraper
 
 
 log = logging.getLogger(__name__)
 
+DRIVER_WINDOW_WIDTH = 800
+DRIVER_WINDOW_HEIGHT = 600
 IMAGE_SAVE_LOCATION = "./images"
 
 
@@ -16,14 +23,23 @@ class Controller(object):
     """
 
     def __init__(self):
-        self._scraper = scraper.NineGagScraper()
+        self._scraper = None
+        self._gui = None
+        self._setup_gui()
+        self._setup_scraper()
+
+    def _setup_gui(self):
+        """Setup the GUI and callbacks for it."""
+
         self._gui = gui.App(self.scrape, self.save_image)
-        self._config_gui()
-
-    def _config_gui(self):
-        """Configure the GUI and callbacks for it."""
-
         self._gui.config_bind("<Return>", self.scrape)
+
+    def _setup_scraper(self):
+        """Setup the scraper."""
+
+        driver = webdriver.Chrome()
+        driver.set_window_size(DRIVER_WINDOW_WIDTH, DRIVER_WINDOW_HEIGHT)
+        self._scraper = scraper.NineGagScraper(driver)
 
     def scrape(self, *args, **kwargs):
         """Scrape images using the scraper instance."""
